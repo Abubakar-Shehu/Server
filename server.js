@@ -15,7 +15,8 @@ app.use(express.static('public'));
 app.use(express.json());
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://prem-stats.vercel.app/"
+  "https://prem-stats.vercel.app/",
+  "https://prem-stats.vercel.app"
 ];
 app.use(cors({
   origin: allowedOrigins // Allow only your React app's origin
