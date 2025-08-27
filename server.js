@@ -13,8 +13,12 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(express.json());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://prem-stats.vercel.app/"
+];
 app.use(cors({
-  origin: 'http://localhost:5173' // Allow only your React app's origin
+  origin: allowedOrigins // Allow only your React app's origin
 }));
 
 const premApiRoute = require('./routes/prem-stats-api');
