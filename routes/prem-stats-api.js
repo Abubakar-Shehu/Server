@@ -1,9 +1,9 @@
 const express = require('express');
 const router  = express.Router();
 
-router.get('/', (req,res) =>[
-  res.send("Welcome to the api routes")
-]);
+router.get('/', (req,res) => {
+  res.send("Welcome to the api routes");
+});
 
 router.get('/prem', (req,res) => {
   const url = 'https://api.football-data.org/v4/competitions/PL/teams?season=2025';
@@ -17,12 +17,20 @@ router.get('/prem', (req,res) => {
   const getStats = async() => {
     try {
       const response = await fetch(url, options);
-      const data = await response.json();  // convert response to JSON
-      console.log(data);  // log the data
-      res.json(data);     // send JSON response back to client
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Teams data fetched successfully');
+      res.json(data);
     } catch (error) {
-      console.error('Error fetching data:', error);
-      res.status(500).send('Error fetching data');
+      console.error('Error fetching teams data:', error);
+      res.status(500).json({
+        error: 'Failed to fetch teams data',
+        message: error.message
+      });
     }
   };
 
@@ -41,12 +49,20 @@ router.get('/prem/table', (req,res) => {
   const getStats = async() => {
     try {
       const response = await fetch(url, options);
-      const data = await response.json();  // convert response to JSON
-      console.log(data);  // log the data
-      res.json(data);     // send JSON response back to client
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Table data fetched successfully');
+      res.json(data);
     } catch (error) {
-      console.error('Error fetching data:', error);
-      res.status(500).send('Error fetching data');
+      console.error('Error fetching table data:', error);
+      res.status(500).json({
+        error: 'Failed to fetch table data',
+        message: error.message
+      });
     }
   };
 
@@ -55,8 +71,17 @@ router.get('/prem/table', (req,res) => {
 
 router.get('/prem/matches/:id', (req,res) => {
   const neededClub = req.params.id;
-  // Might need to change the hard coded season and competition later in the future when I want to add more leagues.
-  const url = `https://api.football-data.org/v4/teams/${neededClub}/matches?competitions=2021&season=2025`;
+  
+  // Validate team ID
+  if (!neededClub || isNaN(neededClub)) {
+    return res.status(400).json({
+      error: 'Invalid team ID',
+      message: 'Team ID must be a valid number'
+    });
+  }
+  
+  // Using PL (Premier League) competition code instead of hardcoded 2021
+  const url = `https://api.football-data.org/v4/teams/${neededClub}/matches?competitions=PL&season=2025`;
   const options = {
     method: 'GET',
     headers: {
@@ -67,12 +92,20 @@ router.get('/prem/matches/:id', (req,res) => {
   const getStats = async() => {
     try {
       const response = await fetch(url, options);
-      const data = await response.json();  // convert response to JSON
-      console.log(data);  // log the data
-      res.json(data);     // send JSON response back to client
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log(`Matches data fetched successfully for team ${neededClub}`);
+      res.json(data);
     } catch (error) {
-      console.error('Error fetching data:', error);
-      res.status(500).send('Error fetching data');
+      console.error(`Error fetching matches data for team ${neededClub}:`, error);
+      res.status(500).json({
+        error: 'Failed to fetch matches data',
+        message: error.message
+      });
     }
   };
 
