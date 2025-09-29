@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const supabase = require('../lib/supabase');
 
+router.get('/', (req,res) =>[
+  res.send("Welcome to the auth routes")
+]);
+
 // Sign up endpoint
 router.post('/signup', async(req, res) => {
   try {
