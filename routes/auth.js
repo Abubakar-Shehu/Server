@@ -9,11 +9,11 @@ router.get('/', (req,res) =>[
 // Sign up endpoint
 router.post('/signup', async(req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, username } = req.body;
 
-    if (!email || !password) {
+    if (!email || !password || !username) {
       return res.status(400).json({
-        error: 'Email and password are required'
+        error: 'Email, password, and username are required'
       });
     }
 
@@ -23,9 +23,20 @@ router.post('/signup', async(req, res) => {
       });
     }
 
+    if (username.length < 3) {
+      return res.status(400).json({
+        error: 'Username must be at least 3 characters long'
+      });
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          username: username
+        }
+      }
     });
 
     if (error) {
